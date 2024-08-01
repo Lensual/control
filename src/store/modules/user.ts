@@ -5,7 +5,7 @@ import type { UserInfo } from '@/types/interface';
 
 const InitUserInfo: UserInfo = {
   name: '', // 用户名，用于展示在页面右上角头像处
-  roles: [], // 前端权限模型使用 如果使用请配置modules/permission-fe.ts使用
+  roles: ['all'], // 前端权限模型使用 如果使用请配置modules/permission-fe.ts使用
 };
 
 export const useUserStore = defineStore('user', {
@@ -77,9 +77,9 @@ export const useUserStore = defineStore('user', {
     },
   },
   persist: {
-    afterRestore: () => {
+    afterRestore: (ctx) => {
       const permissionStore = usePermissionStore();
-      permissionStore.initRoutes();
+      permissionStore.initRoutes(ctx.store.$state.userInfo.roles);
     },
     key: 'user',
     paths: ['token'],
