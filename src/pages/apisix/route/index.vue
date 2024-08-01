@@ -8,7 +8,7 @@
             {{ $t('pages.apisixRoute.export') }}</t-button
           >
           <p v-if="!!selectedRowKeys.length" class="selected-count">
-            {{ $t('pages.apisixRoute.select') }} {{ selectedRowKeys.length }} {{ t('pages.apisixRoute.items') }}
+            {{ $t('pages.apisixRoute.selectedCount', { num: selectedRowKeys.length }) }}
           </p>
         </div>
         <div class="search-input">
@@ -20,8 +20,10 @@
         </div>
       </t-row>
       <t-table
+        v-model:displayColumns="displayColumns"
         :data="data"
         :columns="COLUMNS"
+        :column-controller="columnControllerConfig"
         :row-key="rowKey"
         vertical-align="top"
         :hover="true"
@@ -32,7 +34,7 @@
         table-layout="auto"
         @page-change="rehandlePageChange"
         @change="rehandleChange"
-        @select-change="(value: number[]) => rehandleSelectChange(value)"
+        @select-change="(value: string[]) => rehandleSelectChange(value)"
       >
         <!-- eslint-disable-next-line vue/valid-v-slot -->
         <template #value.labels="{ row }">
@@ -62,10 +64,20 @@
           </t-space>
         </template>
 
+        <!-- eslint-disable-next-line vue/valid-v-slot -->
+        <template #value.create_time="{ row }">
+          {{ moment.unix(row.value.create_time).format() }}
+        </template>
+
+        <!-- eslint-disable-next-line vue/valid-v-slot -->
+        <template #value.update_time="{ row }">
+          {{ moment.unix(row.value.update_time).format() }}
+        </template>
+
         <template #op="slotProps: BaseTableCellParams<Item>">
           <t-space>
-            <t-link theme="primary" @click="handleClickDetail(slotProps)">
-              {{ $t('pages.apisixRoute.operations.detail') }}</t-link
+            <t-link theme="primary" @click="handleClickView(slotProps)">
+              {{ $t('pages.apisixRoute.operations.view') }}</t-link
             >
             <t-link theme="primary" @click="handleClickEdit(slotProps)">
               {{ $t('pages.apisixRoute.operations.edit') }}</t-link
@@ -100,6 +112,10 @@
         }}
       </p>
     </t-dialog>
+
+    <t-drawer v-model:visible="drawerVisible" :header="drawerHeader" :on-confirm="onDrawerClickConfirm" size="medium">
+      <highlightjs language="json" :code="drawerBody" />
+    </t-drawer>
   </div>
 </template>
 
@@ -111,8 +127,9 @@ export default {
 
 <script setup lang="ts">
 import { AxiosPromise } from 'axios';
+import moment from 'moment';
 import { SearchIcon } from 'tdesign-icons-vue-next';
-import { BaseTableCellParams, MessagePlugin, PrimaryTableCol, TableRowData } from 'tdesign-vue-next';
+import { BaseTableCellParams, MessagePlugin, TableProps } from 'tdesign-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -127,8 +144,23 @@ import { useSettingStore } from '@/store';
 
 const store = useSettingStore();
 
-const COLUMNS: PrimaryTableCol<TableRowData>[] = [
+const COLUMNS = ref<TableProps['columns']>([
   { colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left' },
+  {
+    title: t('pages.apisixRoute.root.key'),
+    colKey: 'key',
+    fixed: 'left',
+  },
+  {
+    title: t('pages.apisixRoute.root.createdIndex'),
+    colKey: 'createdIndex',
+    fixed: 'left',
+  },
+  {
+    title: t('pages.apisixRoute.root.modifiedIndex'),
+    colKey: 'modifiedIndex',
+    fixed: 'left',
+  },
   {
     title: t('pages.apisixRoute.value.name'),
     colKey: 'value.name',
@@ -167,12 +199,71 @@ const COLUMNS: PrimaryTableCol<TableRowData>[] = [
     colKey: 'value.plugins',
   },
   {
+    title: t('pages.apisixRoute.value.create_time'),
+    colKey: 'value.create_time',
+    width: 240,
+  },
+  {
+    title: t('pages.apisixRoute.value.update_time'),
+    colKey: 'value.update_time',
+    width: 240,
+  },
+  {
     title: t('pages.apisixRoute.operation'),
     align: 'left',
     fixed: 'right',
     colKey: 'op',
+    width: 160,
   },
-];
+]);
+const staticColumn: string[] = ['row-select', 'op'];
+const displayColumns = ref<TableProps['displayColumns']>(
+  staticColumn.concat([
+    'value.name',
+    'value.host',
+    'value.uri',
+    'value.desc',
+    'value.labels',
+    'value.status',
+    'value.plugins',
+  ]),
+);
+const columnControllerConfig = computed<TableProps['columnController']>(() => ({
+  // 列配置按钮位置
+  placement: 'top-right',
+  // 用于设置允许用户对哪些列进行显示或隐藏的控制，默认为全部字段
+  fields: undefined,
+  // 弹框组件属性透传
+  dialogProps: {
+    preventScrollThrough: true,
+  },
+  // 列配置按钮组件属性透传
+  buttonProps: undefined,
+  // 数据字段分组显示
+  groupColumns: [
+    {
+      label: 'root',
+      value: 'root',
+      columns: ['key', 'createdIndex', 'modifiedIndex'],
+    },
+    {
+      label: 'value',
+      value: 'value',
+      columns: [
+        'value.name',
+        'value.id',
+        'value.host',
+        'value.uri',
+        'value.desc',
+        'value.labels',
+        'value.status',
+        'value.plugins',
+        'value.create_time',
+        'value.update_time',
+      ],
+    },
+  ],
+}));
 
 const data = ref<Item[]>([]);
 const pagination = ref({
@@ -187,8 +278,17 @@ const dataLoading = ref(false);
 const fetchData = async () => {
   dataLoading.value = true;
   try {
-    const res = await RouteApi.apisixAdminRoutesGet();
-    const { list } = res.data;
+    const res = await RouteApi.apisixAdminRoutesGet({
+      params: {
+        page: pagination.value.defaultCurrent,
+        page_size: pagination.value.defaultPageSize,
+      },
+    });
+    let { list } = res.data;
+    // fix: when apisix returns list as {}
+    if (!(list instanceof Array)) {
+      list = [];
+    }
 
     data.value = list;
     pagination.value = {
@@ -209,7 +309,7 @@ onMounted(() => {
 
 const confirmVisible = ref(false);
 
-const selectedRowKeys = ref([1, 2]);
+const selectedRowKeys = ref<string[]>([]);
 
 const router = useRouter();
 
@@ -223,7 +323,7 @@ const onConfirmDelete = async () => {
   deleteIdx.value.forEach((rowIndex) => {
     const { id } = data.value[rowIndex].value;
     const p = RouteApi.apisixAdminRoutesIdDelete({
-      id: id.toString(),
+      id: id.toString(), // fix: apisix openapi
       force: 'false',
     });
     ps.push(p);
@@ -247,7 +347,7 @@ const onCancel = () => {
 
 const rowKey = 'key';
 
-const rehandleSelectChange = (val: number[]) => {
+const rehandleSelectChange = (val: string[]) => {
   selectedRowKeys.value = val;
 };
 const rehandlePageChange = (curr: unknown, pageInfo: unknown) => {
@@ -256,8 +356,10 @@ const rehandlePageChange = (curr: unknown, pageInfo: unknown) => {
 const rehandleChange = (changeParams: unknown, triggerAndData: unknown) => {
   console.log('统一Change', changeParams, triggerAndData);
 };
-const handleClickDetail = (slotProps: BaseTableCellParams<Item>) => {
-  router.push(`/detail/base?id=${slotProps.row.value.id}`);
+const handleClickView = (slotProps: BaseTableCellParams<Item>) => {
+  drawerHeader.value = slotProps.row.value.name;
+  drawerBody.value = JSON.stringify(slotProps.row.value, null, 2);
+  drawerVisible.value = true;
 };
 const handleClickEdit = (slotProps: BaseTableCellParams<Item>) => {
   router.push(`/apisix/route/edit?id=${slotProps.row.value.id}`);
@@ -277,6 +379,19 @@ const headerAffixedTop = computed(
       container: `.${prefix}-layout`,
     }) as any,
 );
+
+const drawerVisible = ref(false);
+const drawerHeader = ref('');
+const drawerBody = ref('');
+
+const onDrawerClickConfirm = () => {
+  MessagePlugin.info('数据保存中...', 1000);
+  const timer = setTimeout(() => {
+    clearTimeout(timer);
+    drawerVisible.value = false;
+    MessagePlugin.info('数据保存成功!');
+  }, 1000);
+};
 </script>
 
 <style lang="less" scoped>

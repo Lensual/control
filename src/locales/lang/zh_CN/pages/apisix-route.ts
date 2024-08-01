@@ -1,22 +1,26 @@
 export default {
   export: '导出TODO',
   create: '新建',
-  select: '已选',
-  items: '项',
+  selectedCount: '已选 {num} 项',
   placeholder: '请输入内容搜索TODO',
   operation: '操作',
   operations: {
-    detail: '详情',
+    view: '查看',
     edit: '编辑',
     delete: '删除',
   },
   deleteConfirm: {
     header: '确认删除当前所选路由？',
     deleteOne: '确认删除"{name}"？',
-    deleteMulti: '确认删除"{name}"等{num}个路由？',
+    deleteMulti: '确认删除"{name}"等 {num} 个路由？',
   },
   deleteMessage: {
-    success: '已删除{num}个路由',
+    success: '已删除 {num} 个路由',
+  },
+  root: {
+    key: 'key',
+    createdIndex: 'createdIndex',
+    modifiedIndex: 'modifiedIndex',
   },
   value: {
     name: '名称',
@@ -32,5 +36,7 @@ export default {
       1: '已发布',
     },
     plugins: '插件',
+    create_time: '创建时间',
+    update_time: '更新时间',
   },
 };
