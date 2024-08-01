@@ -38,14 +38,42 @@ export default ({ mode }: ConfigEnv): UserConfig => {
         mockPath: 'mock',
         enable: true,
       }),
-      svgLoader(),
+      svgLoader({
+        svgoConfig: {
+          plugins: [
+            {
+              name: 'preset-default',
+              params: {
+                overrides: {},
+              },
+            },
+            {
+              name: 'prefixIds',
+              params: {
+                delim: '__',
+                prefixIds: true,
+                prefixClassNames: true,
+              },
+            },
+          ],
+        },
+      }),
     ],
 
     server: {
       port: 3002,
       host: '0.0.0.0',
       proxy: {
-        [VITE_API_URL_PREFIX]: 'http://127.0.0.1:3000/',
+        [`${VITE_API_URL_PREFIX}/apisix/admin/`]: {
+          target: 'http://192.168.233.11:9180',
+          rewrite: (path) => path.replace(/^\/api\/apisix\/admin\//, ''),
+        },
+        [`${VITE_API_URL_PREFIX}/apisix/control/`]: {
+          target: 'http://192.168.233.11:9090',
+        },
+        [`${VITE_API_URL_PREFIX}/`]: {
+          target: 'http://127.0.0.1:3000/',
+        },
       },
     },
   };

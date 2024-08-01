@@ -1,3 +1,5 @@
+import apisixRoute from './apisix-route';
+import apisixRouteEdit from './apisix-route-edit';
 import dashboardBase from './dashboard-base';
 import dashboardDetail from './dashboard-detail';
 import detailBase from './detail-base';
@@ -30,4 +32,7 @@ export default {
   user,
   login,
   result,
+
+  apisixRoute,
+  apisixRouteEdit,
 };
