@@ -47,12 +47,18 @@
 
         <!-- eslint-disable-next-line vue/valid-v-slot -->
         <template #value.status="{ row }">
-          <t-tag v-if="row.value.status === 0" theme="danger" variant="light-outline">
-            {{ $t('pages.apisixRoute.value.statusEnum.0') }}
-          </t-tag>
-          <t-tag v-if="row.value.status === 1" theme="success" variant="light-outline">
-            {{ $t('pages.apisixRoute.value.statusEnum.1') }}
-          </t-tag>
+          <t-switch
+            v-model="row.value.status"
+            size="large"
+            :custom-value="[1, 0]"
+            :label="[t('pages.apisixRoute.value.statusEnum.1'), t('pages.apisixRoute.value.statusEnum.0')]"
+            :loading="statusSwitchLoading[row.value.id]"
+            @change="
+              (value, content) => {
+                updateStatus(row.value.id, value);
+              }
+            "
+          />
         </template>
 
         <!-- eslint-disable-next-line vue/valid-v-slot -->
@@ -129,7 +135,7 @@ export default {
 import { AxiosPromise } from 'axios';
 import moment from 'moment';
 import { SearchIcon } from 'tdesign-icons-vue-next';
-import { BaseTableCellParams, MessagePlugin, TableProps } from 'tdesign-vue-next';
+import { BaseTableCellParams, MessagePlugin, SwitchValue, TableProps } from 'tdesign-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -385,12 +391,29 @@ const drawerHeader = ref('');
 const drawerBody = ref('');
 
 const onDrawerClickConfirm = () => {
-  MessagePlugin.info('数据保存中...', 1000);
+  MessagePlugin.info('数据保存中...', 1000); // TODO impl
   const timer = setTimeout(() => {
     clearTimeout(timer);
     drawerVisible.value = false;
     MessagePlugin.info('数据保存成功!');
   }, 1000);
+};
+
+const statusSwitchLoading = ref<Record<string, any>>({});
+const updateStatus = async (id: string, status: SwitchValue) => {
+  statusSwitchLoading.value[id] = true;
+  try {
+    const res = await RouteApi.apisixAdminRoutesIdPatch({
+      id,
+      apisixAdminRoutesPostRequest: {
+        status,
+      },
+    });
+  } catch (e) {
+    console.error(e);
+  }
+  statusSwitchLoading.value[id] = false;
+  fetchData();
 };
 </script>
 
