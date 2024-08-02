@@ -17701,10 +17701,10 @@ export interface ApisixAdminUpstreamsGet200Response {
 export interface ApisixAdminUpstreamsGet200ResponseListInner {
   /**
    *
-   * @type {ApisixAdminServicesGet200ResponseListInnerValueUpstream}
+   * @type {ApisixAdminUpstreamsGet200ResponseListInnerValue}
    * @memberof ApisixAdminUpstreamsGet200ResponseListInner
    */
-  value: ApisixAdminServicesGet200ResponseListInnerValueUpstream;
+  value: ApisixAdminUpstreamsGet200ResponseListInnerValue;
   /**
    *
    * @type {string}
@@ -17724,6 +17724,187 @@ export interface ApisixAdminUpstreamsGet200ResponseListInner {
    */
   createdIndex: number;
 }
+/**
+ *
+ * @export
+ * @interface ApisixAdminUpstreamsGet200ResponseListInnerValue
+ */
+export interface ApisixAdminUpstreamsGet200ResponseListInnerValue {
+  /**
+   *
+   * @type {string}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  desc?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  update_time?: number;
+  /**
+   * The key used with `hash_on` when `type` is `chash`. When `hash_on` is set to `header` or `cookie`, `key` is required. When `hash_on` is set to `consumer`, `key` is not required as the consumer name will be used as the key automatically.
+   * @type {string}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  key?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  retries?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  retry_timeout?: number;
+  /**
+   * Configure the host when the request is forwarded to the upstream. `pass` is used to pass the request\'s host to the upstream without modification. `node` sets the host to the the host of the upstream node. `rewrite` sets the host to the value of `upstream_host`.
+   * @type {string}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  pass_host?: ApisixAdminUpstreamsGet200ResponseListInnerValuePassHostEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  upstream_host?: string;
+  /**
+   * Load balancing algorithm. Support weighted round robin, consistent hashing, exponentially weighted moving average, and least connections algorithms.
+   * @type {string}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  type?: ApisixAdminUpstreamsGet200ResponseListInnerValueTypeEnum;
+  /**
+   *
+   * @type {ApisixAdminRoutesGet200ResponseListInnerValueUpstreamChecks}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  checks?: ApisixAdminRoutesGet200ResponseListInnerValueUpstreamChecks | null;
+  /**
+   * Type of value to hash on when `type` is `chash`.
+   * @type {string}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  hash_on?: ApisixAdminUpstreamsGet200ResponseListInnerValueHashOnEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  name?: string;
+  /**
+   * Protocol to communicate with the upstream.
+   * @type {string}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  scheme?: ApisixAdminUpstreamsGet200ResponseListInnerValueSchemeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  service_name?: string;
+  /**
+   *
+   * @type {ApisixAdminRoutesGet200ResponseListInnerValueUpstreamKeepalivePool}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  keepalive_pool?: ApisixAdminRoutesGet200ResponseListInnerValueUpstreamKeepalivePool;
+  /**
+   *
+   * @type {ApisixAdminRoutesGet200ResponseListInnerValueUpstreamTimeout}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  timeout?: ApisixAdminRoutesGet200ResponseListInnerValueUpstreamTimeout;
+  /**
+   *
+   * @type {ApisixAdminRoutesGet200ResponseListInnerValuePluginConfigId}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  id?: ApisixAdminRoutesGet200ResponseListInnerValuePluginConfigId;
+  /**
+   * discovery type
+   * @type {string}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  discovery_type?: string;
+  /**
+   * Key-value pairs to specify attributes.
+   * @type {object}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  labels?: object;
+  /**
+   *
+   * @type {ApisixAdminRoutesGet200ResponseListInnerValueUpstreamDiscoveryArgs}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  discovery_args?: ApisixAdminRoutesGet200ResponseListInnerValueUpstreamDiscoveryArgs;
+  /**
+   *
+   * @type {ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodes}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  nodes?: ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodes;
+  /**
+   *
+   * @type {ApisixAdminRoutesGet200ResponseListInnerValueUpstreamTls}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  tls?: ApisixAdminRoutesGet200ResponseListInnerValueUpstreamTls;
+  /**
+   *
+   * @type {number}
+   * @memberof ApisixAdminUpstreamsGet200ResponseListInnerValue
+   */
+  create_time?: number;
+}
+
+export const ApisixAdminUpstreamsGet200ResponseListInnerValuePassHostEnum = {
+  Pass: 'pass',
+  Node: 'node',
+  Rewrite: 'rewrite',
+} as const;
+
+export type ApisixAdminUpstreamsGet200ResponseListInnerValuePassHostEnum =
+  (typeof ApisixAdminUpstreamsGet200ResponseListInnerValuePassHostEnum)[keyof typeof ApisixAdminUpstreamsGet200ResponseListInnerValuePassHostEnum];
+export const ApisixAdminUpstreamsGet200ResponseListInnerValueTypeEnum = {
+  Roundrobin: 'roundrobin',
+  Chash: 'chash',
+  Ewma: 'ewma',
+  LeastConn: 'least_conn',
+} as const;
+
+export type ApisixAdminUpstreamsGet200ResponseListInnerValueTypeEnum =
+  (typeof ApisixAdminUpstreamsGet200ResponseListInnerValueTypeEnum)[keyof typeof ApisixAdminUpstreamsGet200ResponseListInnerValueTypeEnum];
+export const ApisixAdminUpstreamsGet200ResponseListInnerValueHashOnEnum = {
+  Vars: 'vars',
+  Header: 'header',
+  Cookie: 'cookie',
+  Consumer: 'consumer',
+  VarsCombinations: 'vars_combinations',
+} as const;
+
+export type ApisixAdminUpstreamsGet200ResponseListInnerValueHashOnEnum =
+  (typeof ApisixAdminUpstreamsGet200ResponseListInnerValueHashOnEnum)[keyof typeof ApisixAdminUpstreamsGet200ResponseListInnerValueHashOnEnum];
+export const ApisixAdminUpstreamsGet200ResponseListInnerValueSchemeEnum = {
+  Grpc: 'grpc',
+  Grpcs: 'grpcs',
+  Http: 'http',
+  Https: 'https',
+  Tcp: 'tcp',
+  Tls: 'tls',
+  Udp: 'udp',
+  Kafka: 'kafka',
+} as const;
+
+export type ApisixAdminUpstreamsGet200ResponseListInnerValueSchemeEnum =
+  (typeof ApisixAdminUpstreamsGet200ResponseListInnerValueSchemeEnum)[keyof typeof ApisixAdminUpstreamsGet200ResponseListInnerValueSchemeEnum];
+
 /**
  *
  * @export

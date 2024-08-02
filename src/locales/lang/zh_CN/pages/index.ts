@@ -1,5 +1,13 @@
+import apisixConsumer from './apisix-consumer';
+import apisixGlobalRule from './apisix-globalRule';
+import apisixProto from './apisix-proto';
 import apisixRoute from './apisix-route';
 import apisixRouteEdit from './apisix-route-edit';
+import apisixSecret from './apisix-secret';
+import apisixSecretEdit from './apisix-secret-edit';
+import apisixService from './apisix-service';
+import apisixSsl from './apisix-ssl';
+import apisixUpstream from './apisix-upstream';
 import dashboardBase from './dashboard-base';
 import dashboardDetail from './dashboard-detail';
 import detailBase from './detail-base';
@@ -35,4 +43,12 @@ export default {
 
   apisixRoute,
   apisixRouteEdit,
+  apisixUpstream,
+  apisixService,
+  apisixConsumer,
+  apisixProto,
+  apisixGlobalRule,
+  apisixSsl,
+  apisixSecret,
+  apisixSecretEdit,
 };
