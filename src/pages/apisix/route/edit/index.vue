@@ -161,13 +161,13 @@
           @submit="(result: SubmitContext) => onSubmitToNextForm(result, 3)"
         >
           <t-form-item :label="$t('pages.apisixRouteEdit.step2.title')">
-            <t-textarea v-model="formDataJsonStr" readonly />
+            <highlightjs aria-readonly="true" language="json" :code="formDataJsonStr" style="width: 100%" />
           </t-form-item>
           <t-form-item>
             <t-button theme="default" variant="base" @click="onPreStep(1)">{{
               $t('pages.apisixRouteEdit.preStep')
             }}</t-button>
-            <t-button type="submit" theme="primary"> {{ $t('pages.apisixRouteEdit.submit') }} </t-button>
+            <t-button type="submit" theme="primary"> {{ $t('pages.apisixRouteEdit.nextStep') }} </t-button>
           </t-form-item>
         </t-form>
 
@@ -180,7 +180,7 @@
           @submit="(result: SubmitContext) => onSubmit(result, 4)"
         >
           <t-form-item :label="$t('pages.apisixRouteEdit.step3.title')">
-            <t-textarea v-model="formDataJsonStr" readonly />
+            <highlightjs aria-readonly="true" language="json" :code="formDataJsonStr" style="width: 100%" />
           </t-form-item>
           <t-form-item>
             <t-button theme="default" variant="base" @click="onPreStep(2)">{{
@@ -344,7 +344,7 @@ const onComplete = () => {
   router.push({ path: '..' });
 };
 const formDataJsonStr = computed({
-  get: () => JSON.stringify(formData.value),
+  get: () => JSON.stringify(formData.value, null, 2),
   set: () => {},
 });
 const onAddUpstreamNode = () => {

@@ -12,7 +12,7 @@ import 'tdesign-vue-next/es/style/index.css';
 import '@/style/index.less';
 import './permission';
 
-import 'highlight.js/styles/stackoverflow-light.css';
+import 'highlight.js/styles/vs2015.min.css';
 import 'highlight.js/lib/common';
 
 const app = createApp(App);
