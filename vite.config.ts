@@ -32,7 +32,11 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     },
 
     plugins: [
-      vue(),
+      vue({
+        script: {
+          defineModel: true,
+        },
+      }),
       vueJsx(),
       viteMockServe({
         mockPath: 'mock',

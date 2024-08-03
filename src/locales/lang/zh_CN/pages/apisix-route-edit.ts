@@ -19,6 +19,11 @@ export default {
     uriPlaceholder: '请输入 HTTP 请求路径',
     upstream: '上游',
     upstreamInner: {
+      upstreamType: '上游类型',
+      upstreamTypeInner: {
+        nodes: '节点',
+        discovery: '服务发现',
+      },
       nodes: '目标节点',
       addNode: '新建节点',
       removeNode: '删除节点',
@@ -30,6 +35,17 @@ export default {
         weight: '权重',
         weightPlaceholder: '权重',
       },
+      discovery_type: '服务发现类型',
+      discoveryTypeInner: {
+        dns: 'dns',
+        consul: 'consul',
+        consul_kv: 'consul_kv',
+        nacos: 'nacos',
+        eureka: 'eureka',
+        kubernetes: 'kubernetes',
+      },
+      service_name: '服务名称',
+      service_namePlaceholder: '请输入服务名称',
     },
   },
   step2: {

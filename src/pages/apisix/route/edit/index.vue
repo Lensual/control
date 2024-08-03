@@ -90,7 +90,25 @@
 
           <t-divider align="left">{{ t('pages.apisixRouteEdit.step1.upstream') }}</t-divider>
 
-          <t-form-item :label="t('pages.apisixRouteEdit.step1.upstreamInner.nodes')" name="upstream.nodes">
+          <t-form-item
+            :label="t('pages.apisixRouteEdit.step1.upstreamInner.upstreamType')"
+            name="upstream.upstreamType"
+          >
+            <t-radio-group v-model="upstreamType">
+              <t-radio-button
+                v-for="(item, index) in UPSTREAM_TYPE_OPTIONS"
+                :key="index"
+                :label="item"
+                :value="Number(index)"
+              />
+            </t-radio-group>
+          </t-form-item>
+
+          <t-form-item
+            v-if="upstreamType === UPSTREAM_TYPE.NODES"
+            :label="t('pages.apisixRouteEdit.step1.upstreamInner.nodes')"
+            name="upstream.nodes"
+          >
             <!-- 这个div是转换成block -->
             <div>
               <t-form
@@ -144,6 +162,53 @@
               </t-button>
             </div>
           </t-form-item>
+
+          <t-form-item
+            v-if="upstreamType === UPSTREAM_TYPE.DISCOVERY"
+            :label="t('pages.apisixRouteEdit.step1.upstreamInner.discovery_type')"
+            name="upstream.discovery_type"
+          >
+            <enum-select-input
+              v-model="
+                computed({
+                  get: () => formData.upstream?.discovery_type,
+                  set: (v) => {
+                    if (!formData.upstream) {
+                      formData.upstream = {};
+                    }
+                    formData.upstream.discovery_type = v;
+                  },
+                }).value
+              "
+              clearable
+              allow-input
+              :style="{ width: '480px' }"
+              :options="Object.values(DISCOVERY_TYPE)"
+            />
+          </t-form-item>
+
+          <t-form-item
+            v-if="upstreamType === UPSTREAM_TYPE.DISCOVERY"
+            :label="t('pages.apisixRouteEdit.step1.upstreamInner.service_name')"
+            name="upstream.service_name"
+          >
+            <t-input
+              v-model="
+                computed({
+                  get: () => formData.upstream?.service_name,
+                  set: (v) => {
+                    if (!formData.upstream) {
+                      formData.upstream = {};
+                    }
+                    formData.upstream.service_name = v;
+                  },
+                }).value
+              "
+              :style="{ width: '480px' }"
+              :placeholder="t('pages.apisixRouteEdit.step1.upstreamInner.service_namePlaceholder')"
+            />
+          </t-form-item>
+
           <t-form-item>
             <t-button disabled theme="default" variant="base" @click="onPreStep(0)">
               {{ $t('pages.apisixRouteEdit.preStep') }}
@@ -243,9 +308,11 @@ import {
   RouteApiApisixAdminRoutesIdPatchRequest,
   RouteApiApisixAdminRoutesPostRequest,
 } from '@/api/apisix/admin/typescript-axios';
+import EnumSelectInput from '@/components/enum-select-input/index.vue';
 import { t } from '@/locales';
 
 import {
+  DISCOVERY_TYPE,
   // ADDRESS_OPTIONS,
   FORM_RULES_1,
   FORM_RULES_2,
@@ -254,7 +321,9 @@ import {
   // INITIAL_DATA1,
   // INITIAL_DATA2,
   // INITIAL_DATA3,
-  // NAME_OPTIONS,
+  UPSTREAM_TYPE,
+  UPSTREAM_TYPE_OPTIONS,
+  // DISCOVERY_TYPE_OPTIONS,
   // TYPE_OPTIONS,
 } from './constants';
 
@@ -343,6 +412,7 @@ const update = () => {
 const onComplete = () => {
   router.push({ path: '..' });
 };
+const upstreamType = ref<UPSTREAM_TYPE>(UPSTREAM_TYPE.NODES);
 const formDataJsonStr = computed({
   get: () => JSON.stringify(formData.value, null, 2),
   set: () => {},
