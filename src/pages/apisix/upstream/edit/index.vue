@@ -141,7 +141,7 @@ const onReset = () => {
 };
 const onReapply = () => {
   onReset();
-  router.push('/apisix/upstream/edit'); // clean query id
+  router.replace({ query: null }); // clean query id
 };
 const onSubmit = async (result: SubmitContext) => {
   if (result.validateResult !== true) {
@@ -181,7 +181,7 @@ const update = () => {
   return UpstreamApi.apisixAdminUpstreamsIdPatch(req);
 };
 const onComplete = () => {
-  router.push({ path: '..' });
+  router.back();
 };
 </script>
 
