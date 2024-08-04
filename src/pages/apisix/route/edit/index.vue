@@ -161,19 +161,6 @@
 export default {
   name: 'ApisixRouteEdit',
 };
-
-export const METHOD_OPTIONS = [
-  { label: 'GET', value: 'GET' },
-  { label: 'POST', value: 'POST' },
-  { label: 'PUT', value: 'PUT' },
-  { label: 'DELETE', value: 'DELETE' },
-  { label: 'PATCH', value: 'PATCH' },
-  { label: 'HEAD', value: 'HEAD' },
-  { label: 'OPTIONS', value: 'OPTIONS' },
-  { label: 'CONNECT', value: 'CONNECT' },
-  { label: 'TRACE', value: 'TRACE' },
-  { label: 'PURGE', value: 'PURGE' },
-];
 </script>
 
 <script setup lang="ts">
@@ -193,7 +180,7 @@ import {
 import UpstreamForm from '@/components/apisix/upstream-form.vue';
 import { t } from '@/locales';
 
-import { FORM_RULES_1, FORM_RULES_2, FORM_RULES_3 } from './constants';
+import { FORM_RULES_1, FORM_RULES_2, FORM_RULES_3, METHOD_OPTIONS } from './constants';
 
 let INITIAL_DATA: ApisixAdminRoutesPostRequest = {};
 
