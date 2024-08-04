@@ -98,18 +98,18 @@ export default [
           },
         },
       },
-      // {
-      //   path: 'consumer/edit',
-      //   name: 'ApisixConsumerEdit',
-      //   component: () => import('@/pages/apisix/consumer/edit/index.vue'),
-      //   meta: {
-      //     title: {
-      //       zh_CN: '编辑消费者',
-      //       en_US: 'Edit Consumer',
-      //     },
-      //     hidden: true,
-      //   },
-      // },
+      {
+        path: 'consumer/edit',
+        name: 'ApisixConsumerEdit',
+        component: () => import('@/pages/apisix/consumer/edit/index.vue'),
+        meta: {
+          title: {
+            zh_CN: '编辑消费者',
+            en_US: 'Edit Consumer',
+          },
+          hidden: true,
+        },
+      },
       {
         path: 'proto',
         name: 'ApisixProto',
