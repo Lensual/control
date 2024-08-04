@@ -40,18 +40,18 @@ export default [
           },
         },
       },
-      // {
-      //   path: 'upstream/edit',
-      //   name: 'ApisixUpstreamEdit',
-      //   component: () => import('@/pages/apisix/upstream/edit/index.vue'),
-      //   meta: {
-      //     title: {
-      //       zh_CN: '编辑上游',
-      //       en_US: 'Edit Upstream',
-      //     },
-      //     hidden: true,
-      //   },
-      // },
+      {
+        path: 'upstream/edit',
+        name: 'ApisixUpstreamEdit',
+        component: () => import('@/pages/apisix/upstream/edit/index.vue'),
+        meta: {
+          title: {
+            zh_CN: '编辑上游',
+            en_US: 'Edit Upstream',
+          },
+          hidden: true,
+        },
+      },
       {
         path: 'service',
         name: 'ApisixService',

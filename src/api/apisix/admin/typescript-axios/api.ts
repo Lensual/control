@@ -17913,10 +17913,10 @@ export type ApisixAdminUpstreamsGet200ResponseListInnerValueSchemeEnum =
 export interface ApisixAdminUpstreamsIdGet200Response {
   /**
    *
-   * @type {ApisixAdminServicesGet200ResponseListInnerValueUpstream}
+   * @type {ApisixAdminUpstreamsGet200ResponseListInnerValue}
    * @memberof ApisixAdminUpstreamsIdGet200Response
    */
-  value?: ApisixAdminServicesGet200ResponseListInnerValueUpstream;
+  value?: ApisixAdminUpstreamsGet200ResponseListInnerValue;
   /**
    *
    * @type {string}

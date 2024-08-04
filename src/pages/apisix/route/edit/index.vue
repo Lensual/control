@@ -25,18 +25,6 @@
         </t-card>
 
         <!-- 分步表单1 设置路由信息 -->
-        <!-- <div v-show="activeStep === 1" class="rule-tips">
-          <t-alert theme="info" :title="t('pages.apisixRouteEdit.step1.rules')" :close="true">
-            <template #message>
-              <p>
-                {{ $t('pages.apisixRouteEdit.step1.rule1') }}
-              </p>
-              <p>{{ $t('pages.apisixRouteEdit.step1.rule2') }}</p>
-              <p>{{ $t('pages.apisixRouteEdit.step1.rule3') }}</p>
-            </template>
-          </t-alert>
-        </div> -->
-
         <t-divider align="left">{{ t('pages.apisixRouteEdit.step1.basic') }}</t-divider>
 
         <t-form
@@ -90,127 +78,30 @@
 
           <t-divider align="left">{{ t('pages.apisixRouteEdit.step1.upstream') }}</t-divider>
 
-          <t-form-item
-            :label="t('pages.apisixRouteEdit.step1.upstreamInner.upstreamType')"
-            name="upstream.upstreamType"
+          <upstream-form
+            v-show="activeStep === 1"
+            v-model="
+              computed({
+                get: () => {
+                  if (!formData.upstream) {
+                    formData.upstream = {};
+                  }
+                  return formData.upstream;
+                },
+                set: (v) => {
+                  if (!formData.upstream) {
+                    formData.upstream = {};
+                  }
+                  formData.upstream = v;
+                },
+              }).value
+            "
+            style="margin-bottom: var(--td-comp-margin-xxl)"
           >
-            <t-radio-group v-model="upstreamType">
-              <t-radio-button
-                v-for="(item, index) in UPSTREAM_TYPE_OPTIONS"
-                :key="index"
-                :label="item"
-                :value="Number(index)"
-              />
-            </t-radio-group>
-          </t-form-item>
-
-          <t-form-item
-            v-if="upstreamType === UPSTREAM_TYPE.NODES"
-            :label="t('pages.apisixRouteEdit.step1.upstreamInner.nodes')"
-            name="upstream.nodes"
-          >
-            <!-- 这个div是转换成block -->
-            <div>
-              <t-form
-                v-for="(nodeItem, index) in formData.upstream
-                  ?.nodes as ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodesAnyOfInner[]"
-                :key="index"
-                style="margin-bottom: var(--td-comp-margin-xxl)"
-                layout="inline"
-                :data="nodeItem"
-                :rules="UPSTREAM_NODES_RULE"
-              >
-                <t-form-item
-                  :label="$t('pages.apisixRouteEdit.step1.upstreamInner.nodesInner.host')"
-                  name="upstream.nodes.host"
-                >
-                  <t-input
-                    v-model="nodeItem.host"
-                    :placeholder="$t('pages.apisixRouteEdit.step1.upstreamInner.nodesInner.hostPlaceholder')"
-                  />
-                </t-form-item>
-                <t-form-item
-                  :label="$t('pages.apisixRouteEdit.step1.upstreamInner.nodesInner.port')"
-                  name="upstream.nodes.port"
-                >
-                  <t-input-number
-                    v-model="nodeItem.port"
-                    theme="normal"
-                    :placeholder="$t('pages.apisixRouteEdit.step1.upstreamInner.nodesInner.portPlaceholder')"
-                  />
-                </t-form-item>
-                <t-form-item
-                  :label="$t('pages.apisixRouteEdit.step1.upstreamInner.nodesInner.weight')"
-                  name="upstream.nodes.weight"
-                >
-                  <t-input-number
-                    v-model="nodeItem.weight"
-                    theme="normal"
-                    :placeholder="$t('pages.apisixRouteEdit.step1.upstreamInner.nodesInner.weightPlaceholder')"
-                  />
-                </t-form-item>
-                <t-button
-                  theme="danger"
-                  style="margin-left: var(--td-comp-margin-xxl)"
-                  @click="onRemoveUpstreamNode(index)"
-                >
-                  {{ $t('pages.apisixRouteEdit.step1.upstreamInner.removeNode') }}
-                </t-button>
-              </t-form>
-              <t-button @click="onAddUpstreamNode">
-                {{ $t('pages.apisixRouteEdit.step1.upstreamInner.addNode') }}
-              </t-button>
-            </div>
-          </t-form-item>
-
-          <t-form-item
-            v-if="upstreamType === UPSTREAM_TYPE.DISCOVERY"
-            :label="t('pages.apisixRouteEdit.step1.upstreamInner.discovery_type')"
-            name="upstream.discovery_type"
-          >
-            <enum-select-input
-              v-model="
-                computed({
-                  get: () => formData.upstream?.discovery_type,
-                  set: (v) => {
-                    if (!formData.upstream) {
-                      formData.upstream = {};
-                    }
-                    formData.upstream.discovery_type = v;
-                  },
-                }).value
-              "
-              clearable
-              allow-input
-              :style="{ width: '480px' }"
-              :options="Object.values(DISCOVERY_TYPE)"
-            />
-          </t-form-item>
-
-          <t-form-item
-            v-if="upstreamType === UPSTREAM_TYPE.DISCOVERY"
-            :label="t('pages.apisixRouteEdit.step1.upstreamInner.service_name')"
-            name="upstream.service_name"
-          >
-            <t-input
-              v-model="
-                computed({
-                  get: () => formData.upstream?.service_name,
-                  set: (v) => {
-                    if (!formData.upstream) {
-                      formData.upstream = {};
-                    }
-                    formData.upstream.service_name = v;
-                  },
-                }).value
-              "
-              :style="{ width: '480px' }"
-              :placeholder="t('pages.apisixRouteEdit.step1.upstreamInner.service_namePlaceholder')"
-            />
-          </t-form-item>
+          </upstream-form>
 
           <t-form-item>
-            <t-button disabled theme="default" variant="base" @click="onPreStep(0)">
+            <t-button disabled theme="default" variant="base" @click="onPreStep">
               {{ $t('pages.apisixRouteEdit.preStep') }}
             </t-button>
             <t-button type="submit" theme="primary"> {{ $t('pages.apisixRouteEdit.nextStep') }} </t-button>
@@ -226,10 +117,15 @@
           @submit="(result: SubmitContext) => onSubmitToNextForm(result, 3)"
         >
           <t-form-item :label="$t('pages.apisixRouteEdit.step2.title')">
-            <highlightjs aria-readonly="true" language="json" :code="formDataJsonStr" style="width: 100%" />
+            <highlightjs
+              aria-readonly="true"
+              language="json"
+              :code="JSON.stringify(formData, null, 2)"
+              style="width: 100%"
+            />
           </t-form-item>
           <t-form-item>
-            <t-button theme="default" variant="base" @click="onPreStep(1)">{{
+            <t-button theme="default" variant="base" @click="onPreStep">{{
               $t('pages.apisixRouteEdit.preStep')
             }}</t-button>
             <t-button type="submit" theme="primary"> {{ $t('pages.apisixRouteEdit.nextStep') }} </t-button>
@@ -245,10 +141,15 @@
           @submit="(result: SubmitContext) => onSubmit(result, 4)"
         >
           <t-form-item :label="$t('pages.apisixRouteEdit.step3.title')">
-            <highlightjs aria-readonly="true" language="json" :code="formDataJsonStr" style="width: 100%" />
+            <highlightjs
+              aria-readonly="true"
+              language="json"
+              :code="JSON.stringify(formData, null, 2)"
+              style="width: 100%"
+            />
           </t-form-item>
           <t-form-item>
-            <t-button theme="default" variant="base" @click="onPreStep(2)">{{
+            <t-button theme="default" variant="base" @click="onPreStep">{{
               $t('pages.apisixRouteEdit.preStep')
             }}</t-button>
             <t-button type="submit" theme="primary"> {{ $t('pages.apisixRouteEdit.submit') }} </t-button>
@@ -302,30 +203,15 @@ import { useRouter } from 'vue-router';
 
 import { RouteApi } from '@/api/apisix/admin';
 import {
-  ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodesAnyOfInner,
   ApisixAdminRoutesPost201Response,
   ApisixAdminRoutesPostRequest,
   RouteApiApisixAdminRoutesIdPatchRequest,
   RouteApiApisixAdminRoutesPostRequest,
 } from '@/api/apisix/admin/typescript-axios';
-import EnumSelectInput from '@/components/enum-select-input/index.vue';
+import UpstreamForm from '@/components/apisix/upstream-form.vue';
 import { t } from '@/locales';
 
-import {
-  DISCOVERY_TYPE,
-  // ADDRESS_OPTIONS,
-  FORM_RULES_1,
-  FORM_RULES_2,
-  FORM_RULES_3,
-  UPSTREAM_NODES_RULE,
-  // INITIAL_DATA1,
-  // INITIAL_DATA2,
-  // INITIAL_DATA3,
-  UPSTREAM_TYPE,
-  UPSTREAM_TYPE_OPTIONS,
-  // DISCOVERY_TYPE_OPTIONS,
-  // TYPE_OPTIONS,
-} from './constants';
+import { FORM_RULES_1, FORM_RULES_2, FORM_RULES_3 } from './constants';
 
 let INITIAL_DATA: ApisixAdminRoutesPostRequest = {};
 
@@ -364,8 +250,8 @@ const onSubmitToNextForm = (result: SubmitContext, nextForm: number) => {
 
   activeStep.value = nextForm;
 };
-const onPreStep = (preForm: number) => {
-  activeStep.value = preForm;
+const onPreStep = (_e: MouseEvent) => {
+  activeStep.value--;
 };
 const onReset = () => {
   activeStep.value = 1;
@@ -400,34 +286,17 @@ const create = () => {
   const req: RouteApiApisixAdminRoutesPostRequest = {
     apisixAdminRoutesPostRequest: formData.value,
   };
-  return RouteApi.apisixAdminRoutesPost(req); // TODO
+  return RouteApi.apisixAdminRoutesPost(req);
 };
 const update = () => {
   const req: RouteApiApisixAdminRoutesIdPatchRequest = {
     id: formData.value.id as string,
     apisixAdminRoutesPostRequest: formData.value,
   };
-  return RouteApi.apisixAdminRoutesIdPatch(req); // TODO
+  return RouteApi.apisixAdminRoutesIdPatch(req);
 };
 const onComplete = () => {
   router.push({ path: '..' });
-};
-const upstreamType = ref<UPSTREAM_TYPE>(UPSTREAM_TYPE.NODES);
-const formDataJsonStr = computed({
-  get: () => JSON.stringify(formData.value, null, 2),
-  set: () => {},
-});
-const onAddUpstreamNode = () => {
-  if (!formData.value.upstream) {
-    formData.value.upstream = {};
-  }
-  if (!formData.value.upstream.nodes) {
-    formData.value.upstream.nodes = [];
-  }
-  (formData.value.upstream.nodes as Array<unknown>).push({});
-};
-const onRemoveUpstreamNode = (i: number) => {
-  (formData.value.upstream.nodes as Array<unknown>).splice(i, 1);
 };
 </script>
 

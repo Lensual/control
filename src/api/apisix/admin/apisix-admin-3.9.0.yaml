@@ -12620,9 +12620,6 @@ paths:
                       create_time:
                         type: integer
                     type: object
-                    oneOf:
-                      - type: string
-                      - type: string
                   key:
                     type: string
                   modifiedIndex:
