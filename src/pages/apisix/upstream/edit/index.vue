@@ -23,12 +23,7 @@
         <!-- 分步表单1 基础信息 -->
         <t-divider align="left">{{ t('pages.apisixRouteEdit.step1.basic') }}</t-divider>
 
-        <upstream-form
-          v-show="activeStep === 1"
-          v-model="formData"
-          class="step-form"
-          @submit="(result: SubmitContext) => onSubmitToNextForm(result, 2)"
-        >
+        <upstream-form v-show="activeStep === 1" v-model="formData" class="step-form" @submit="onNextStep">
           <t-form-item>
             <t-button disabled theme="default" variant="base" @click="onPreStep">
               {{ $t('pages.apisixUpstreamEdit.preStep') }}
@@ -38,13 +33,7 @@
         </upstream-form>
 
         <!-- 分步表单2 预览 -->
-        <t-form
-          v-show="activeStep === 2"
-          class="step-form"
-          :data="formData"
-          :rules="FORM_RULES_2"
-          @submit="(result: SubmitContext) => onSubmit(result, 3)"
-        >
+        <t-form v-show="activeStep === 2" class="step-form" :data="formData" :rules="FORM_RULES_2" @submit="onSubmit">
           <t-form-item :label="$t('pages.apisixUpstreamEdit.step2.title')">
             <highlightjs
               aria-readonly="true"
@@ -135,12 +124,12 @@ const fetchData = async (id: string) => {
   dataLoading.value = false;
 };
 
-const onSubmitToNextForm = (result: SubmitContext, nextForm: number) => {
+const onNextStep = (result: SubmitContext) => {
   if (result.validateResult !== true) {
     return;
   }
 
-  activeStep.value = nextForm;
+  activeStep.value++;
 };
 const onPreStep = (_e: MouseEvent) => {
   activeStep.value--;
@@ -154,7 +143,11 @@ const onReapply = () => {
   onReset();
   router.push('/apisix/upstream/edit'); // clean query id
 };
-const onSubmit = async (result: SubmitContext, nextForm: number) => {
+const onSubmit = async (result: SubmitContext) => {
+  if (result.validateResult !== true) {
+    return;
+  }
+
   dataLoading.value = true;
   let res: AxiosResponse<ApisixAdminUpstreamsPost201Response>;
   try {
@@ -163,7 +156,7 @@ const onSubmit = async (result: SubmitContext, nextForm: number) => {
     } else {
       res = await create();
     }
-    onSubmitToNextForm(result, nextForm);
+    onNextStep(result);
   } catch (e) {
     if (e instanceof AxiosError) {
       if (e.response.data.error_msg) {

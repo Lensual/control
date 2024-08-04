@@ -23,13 +23,7 @@
         <!-- 分步表单1 设置路由信息 -->
         <t-divider align="left">{{ t('pages.apisixSecretEdit.step1.basic') }}</t-divider>
 
-        <t-form
-          v-show="activeStep === 1"
-          class="step-form"
-          :data="formData"
-          :rules="FORM_RULES_1"
-          @submit="(result: SubmitContext) => onSubmitToNextForm(result, 2)"
-        >
+        <t-form v-show="activeStep === 1" class="step-form" :data="formData" :rules="FORM_RULES_1" @submit="onNextStep">
           <t-form-item :label="t('pages.apisixSecretEdit.step1.secretmanager')" name="secretmanager">
             <enum-select-input
               v-model="formData.secretmanager"
@@ -84,13 +78,7 @@
         </t-form>
 
         <!-- 分步表单2 预览 -->
-        <t-form
-          v-show="activeStep === 2"
-          class="step-form"
-          :data="formData"
-          :rules="FORM_RULES_2"
-          @submit="(result: SubmitContext) => onSubmit(result, 3)"
-        >
+        <t-form v-show="activeStep === 2" class="step-form" :data="formData" :rules="FORM_RULES_2" @submit="onSubmit">
           <t-form-item :label="$t('pages.apisixSecretEdit.step2.title')">
             <highlightjs
               aria-readonly="true"
@@ -216,12 +204,12 @@ const fetchData = async (secretmanager: string, id: string) => {
   dataLoading.value = false;
 };
 
-const onSubmitToNextForm = (result: SubmitContext, nextForm: number) => {
+const onNextStep = (result: SubmitContext) => {
   if (result.validateResult !== true) {
     return;
   }
 
-  activeStep.value = nextForm;
+  activeStep.value++;
 };
 const onPreStep = (_e: MouseEvent) => {
   activeStep.value--;
@@ -242,7 +230,11 @@ const onReapply = () => {
   onReset();
   router.push('/apisix/route/edit'); // clean query id
 };
-const onSubmit = async (result: SubmitContext, nextForm: number) => {
+const onSubmit = async (result: SubmitContext) => {
+  if (result.validateResult !== true) {
+    return;
+  }
+
   dataLoading.value = true;
   let res: AxiosResponse<ApisixAdminRoutesPost201Response>;
   try {
@@ -251,7 +243,7 @@ const onSubmit = async (result: SubmitContext, nextForm: number) => {
     } else {
       res = await create();
     }
-    onSubmitToNextForm(result, nextForm);
+    onNextStep(result);
   } catch (e) {
     if (e instanceof AxiosError) {
       if (e.response.data.error_msg) {
