@@ -190,18 +190,18 @@ export default [
           },
         },
       },
-      // {
-      //   path: 'secret/edit',
-      //   name: 'ApisixSecretEdit',
-      //   component: () => import('@/pages/apisix/secret/edit/index.vue'),
-      //   meta: {
-      //     title: {
-      //       zh_CN: '编辑密钥管理器',
-      //       en_US: 'Edit SecretManager',
-      //     },
-      //     hidden: true,
-      //   },
-      // },
+      {
+        path: 'secret/edit',
+        name: 'ApisixSecretEdit',
+        component: () => import('@/pages/apisix/secret/edit/index.vue'),
+        meta: {
+          title: {
+            zh_CN: '编辑密钥管理器',
+            en_US: 'Edit SecretManager',
+          },
+          hidden: true,
+        },
+      },
     ],
   },
 ];

@@ -38,11 +38,13 @@
       >
         <!-- eslint-disable-next-line vue/valid-v-slot -->
         <template #value.secretManager="{ row }">
+          <!-- API 接口的id字段格式是 "{secretmanager}/{id}" 这里做拆分 -->
           {{ row.value.id.split('/', 2)[0] }}
         </template>
 
         <!-- eslint-disable-next-line vue/valid-v-slot -->
         <template #value.name="{ row }">
+          <!-- API 接口的id字段格式是 "{secretmanager}/{id}" 这里做拆分 -->
           {{ row.value.id.split('/', 2)[1] }}
         </template>
 
@@ -143,6 +145,7 @@ const COLUMNS: PrimaryTableCol<TableRowData>[] = [
     colKey: 'modifiedIndex',
     fixed: 'left',
   },
+  // <!-- API 接口的id字段格式是 "{secretmanager}/{id}" 这里是接口原始字段 -->
   {
     title: t('pages.apisixSecret.value.id'),
     colKey: 'value.id',
@@ -323,7 +326,9 @@ const handleClickView = (slotProps: BaseTableCellParams<Item>) => {
   drawerVisible.value = true;
 };
 const handleClickEdit = (slotProps: BaseTableCellParams<Item>) => {
-  router.push(`/apisix/secret/edit?id=${slotProps.row.value.id}`);
+  // <!-- API 接口的id字段格式是 "{secretmanager}/{id}" 这里做拆分 -->
+  const [secretmanager, id] = slotProps.row.value.id.split('/', 2);
+  router.push(`/apisix/secret/edit?secretmanager=${secretmanager}&id=${id}`);
 };
 const handleCreate = () => {
   router.push('/apisix/secret/edit');
