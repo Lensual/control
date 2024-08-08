@@ -11,13 +11,13 @@ export const FORM_RULES_1: Record<string, FormRule[]> = {
   token: [{ required: true, type: 'error' }],
 };
 
-export const FORM_RULES_2: Record<string, FormRule[]> = merge(FORM_RULES_1, {});
+export const FORM_RULES_2: Record<string, FormRule[]> = merge({}, FORM_RULES_1, {});
 
 export enum SECRETMANAGER {
   VAULT = 'vault',
   AWS = 'aws',
 }
-export const SECRETMANAGER_OPTIONS: Record<DISCOVERY_TYPE, string> = {
+export const SECRETMANAGER_OPTIONS: Record<SECRETMANAGER, string> = {
   [SECRETMANAGER.VAULT]: t('pages.apisixSecretEdit.secretmanagerEnum.vault'),
   [SECRETMANAGER.AWS]: t('components.apisixSecretEdit.secretmanagerEnum.consul'),
 };

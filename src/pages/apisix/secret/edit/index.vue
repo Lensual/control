@@ -180,7 +180,7 @@ const fetchData = async (secretmanager: string, id: string) => {
       secretmanager,
       id,
     });
-    INITIAL_DATA = merge(res.data.value, { secretmanager, id });
+    INITIAL_DATA = merge({}, res.data.value, { secretmanager, id });
     formData.value = cloneDeep(INITIAL_DATA);
 
     editSecretmanager.value = secretmanager;

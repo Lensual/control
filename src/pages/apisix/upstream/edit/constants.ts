@@ -12,8 +12,8 @@ export const UPSTREAM_NODES_RULE: Record<string, FormRule[]> = {
   weight: [{ required: true, type: 'error' }],
 };
 
-export const FORM_RULES_2: Record<string, FormRule[]> = merge(FORM_RULES_1, {});
-export const FORM_RULES_3: Record<string, FormRule[]> = merge(FORM_RULES_1, {});
+export const FORM_RULES_2: Record<string, FormRule[]> = merge({}, FORM_RULES_1, {});
+export const FORM_RULES_3: Record<string, FormRule[]> = merge({}, FORM_RULES_1, {});
 
 export enum UPSTREAM_TYPE {
   NODES,

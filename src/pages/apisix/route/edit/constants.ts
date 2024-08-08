@@ -6,8 +6,8 @@ export const FORM_RULES_1: Record<string, FormRule[]> = {
   uri: [{ required: true, type: 'error' }],
 };
 
-export const FORM_RULES_2: Record<string, FormRule[]> = merge(FORM_RULES_1, {});
-export const FORM_RULES_3: Record<string, FormRule[]> = merge(FORM_RULES_1, {});
+export const FORM_RULES_2: Record<string, FormRule[]> = merge({}, FORM_RULES_1, {});
+export const FORM_RULES_3: Record<string, FormRule[]> = merge({}, FORM_RULES_1, {});
 
 export const METHOD_OPTIONS = [
   { label: 'GET', value: 'GET' },
