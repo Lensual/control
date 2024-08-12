@@ -105,12 +105,7 @@
         <!-- 分步表单2 插件配置 -->
         <t-form v-show="activeStep === 2" class="step-form" :data="formData" :rules="FORM_RULES_2" @submit="onNextStep">
           <t-form-item :label="$t('pages.apisixRouteEdit.step2.title')">
-            <highlightjs
-              aria-readonly="true"
-              language="json"
-              :code="JSON.stringify(formData, null, 2)"
-              style="width: 100%"
-            />
+            <code-editor ref="pluginEditorRef" v-model:value="pluginEditorData" language="json" />
           </t-form-item>
           <t-form-item>
             <t-button theme="default" variant="base" @click="onPreStep">{{
@@ -123,11 +118,11 @@
         <!-- 分步表单3 预览 -->
         <t-form v-show="activeStep === 3" class="step-form" :data="formData" :rules="FORM_RULES_3" @submit="onSubmit">
           <t-form-item :label="$t('pages.apisixRouteEdit.step3.title')">
-            <highlightjs
-              aria-readonly="true"
+            <code-editor
+              ref="previewEditorRef"
+              v-model:value="previewEditorData"
               language="json"
-              :code="JSON.stringify(formData, null, 2)"
-              style="width: 100%"
+              :options="{ readOnly: true }"
             />
           </t-form-item>
           <t-form-item>
@@ -167,7 +162,7 @@ export default {
 import { AxiosError, AxiosResponse } from 'axios';
 import { cloneDeep } from 'lodash';
 import { MessagePlugin, SubmitContext } from 'tdesign-vue-next';
-import { computed, onActivated, ref } from 'vue';
+import { computed, onActivated, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { RouteApi } from '@/api/apisix/admin';
@@ -178,6 +173,7 @@ import {
   RouteApiApisixAdminRoutesPostRequest,
 } from '@/api/apisix/admin/typescript-axios';
 import UpstreamForm from '@/components/apisix/upstream-form.vue';
+import CodeEditor from '@/components/code-editor/index.vue';
 import { t } from '@/locales';
 
 import { FORM_RULES_1, FORM_RULES_2, FORM_RULES_3, METHOD_OPTIONS } from './constants';
@@ -207,12 +203,13 @@ const fetchData = async (id: string) => {
     INITIAL_DATA = res.data.value;
     formData.value = cloneDeep(INITIAL_DATA);
   } catch (e) {
-    console.error(e);
+    console.error(e); // TODO Message
   }
   dataLoading.value = false;
 };
 
 const onNextStep = (result: SubmitContext) => {
+  console.debug('ApisixRouteEdit onNextStep validation', result);
   if (result.validateResult !== true) {
     return;
   }
@@ -232,6 +229,7 @@ const onReapply = () => {
   router.replace({ query: null }); // clean query id
 };
 const onSubmit = async (result: SubmitContext) => {
+  console.debug('ApisixRouteEdit onSubmit validation', result);
   if (result.validateResult !== true) {
     return;
   }
@@ -271,6 +269,24 @@ const update = () => {
 const onComplete = () => {
   router.back();
 };
+// 配置编辑器
+const pluginEditorRef = ref<InstanceType<typeof CodeEditor>>();
+const pluginEditorData = ref('');
+const previewEditorRef = ref<InstanceType<typeof CodeEditor>>();
+const previewEditorData = ref('');
+watch(activeStep, (newStep, oldStep) => {
+  // <!-- 分步表单2 插件配置 -->
+  if (newStep === 2) {
+    pluginEditorRef.value.loadJson(formData.value, true);
+  }
+  if (oldStep === 2) {
+    formData.value = pluginEditorRef.value.parseJson();
+  }
+  // <!-- 分步表单3 预览 -->
+  if (newStep === 3) {
+    previewEditorRef.value.loadJson(formData.value, true);
+  }
+});
 </script>
 
 <style lang="less" scoped>
