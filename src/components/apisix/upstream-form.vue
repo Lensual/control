@@ -184,6 +184,8 @@ const onRemoveUpstreamNode = (i: number) => {
 };
 
 const onSubmit = async (result: SubmitContext) => {
+  console.debug('ApisixUpstreamForm onSubmit validation', result);
+
   delete (root.value as any).create_time;
   delete (root.value as any).update_time;
 

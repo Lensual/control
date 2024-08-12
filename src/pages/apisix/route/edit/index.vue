@@ -169,7 +169,7 @@ import { RouteApi } from '@/api/apisix/admin';
 import {
   ApisixAdminRoutesPost201Response,
   ApisixAdminRoutesPostRequest,
-  RouteApiApisixAdminRoutesIdPatchRequest,
+  RouteApiApisixAdminRoutesIdPutRequest,
   RouteApiApisixAdminRoutesPostRequest,
 } from '@/api/apisix/admin/typescript-axios';
 import UpstreamForm from '@/components/apisix/upstream-form.vue';
@@ -234,6 +234,9 @@ const onSubmit = async (result: SubmitContext) => {
     return;
   }
 
+  delete (formData.value as any).create_time;
+  delete (formData.value as any).update_time;
+
   dataLoading.value = true;
   let res: AxiosResponse<ApisixAdminRoutesPost201Response>;
   try {
@@ -260,11 +263,11 @@ const create = () => {
   return RouteApi.apisixAdminRoutesPost(req);
 };
 const update = () => {
-  const req: RouteApiApisixAdminRoutesIdPatchRequest = {
+  const req: RouteApiApisixAdminRoutesIdPutRequest = {
     id: formData.value.id as string,
     apisixAdminRoutesPostRequest: formData.value,
   };
-  return RouteApi.apisixAdminRoutesIdPatch(req);
+  return RouteApi.apisixAdminRoutesIdPut(req);
 };
 const onComplete = () => {
   router.back();

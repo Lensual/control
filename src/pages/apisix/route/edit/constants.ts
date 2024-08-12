@@ -2,7 +2,6 @@ import { merge } from 'lodash';
 import { FormRule } from 'tdesign-vue-next';
 
 export const FORM_RULES_1: Record<string, FormRule[]> = {
-  name: [{ required: true, type: 'error' }],
   uri: [{ required: true, type: 'error' }],
 };
 

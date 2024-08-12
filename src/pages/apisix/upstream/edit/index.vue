@@ -35,11 +35,11 @@
         <!-- 分步表单2 预览 -->
         <t-form v-show="activeStep === 2" class="step-form" :data="formData" :rules="FORM_RULES_2" @submit="onSubmit">
           <t-form-item :label="$t('pages.apisixUpstreamEdit.step2.title')">
-            <highlightjs
-              aria-readonly="true"
+            <code-editor
+              ref="previewEditorRef"
+              v-model:value="previewEditorData"
               language="json"
-              :code="JSON.stringify(formData, null, 2)"
-              style="width: 100%"
+              :options="{ readOnly: true }"
             />
           </t-form-item>
           <t-form-item>
@@ -79,7 +79,7 @@ export default {
 import { AxiosError, AxiosResponse } from 'axios';
 import { cloneDeep } from 'lodash';
 import { MessagePlugin, SubmitContext } from 'tdesign-vue-next';
-import { onActivated, ref } from 'vue';
+import { onActivated, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { UpstreamApi } from '@/api/apisix/admin';
@@ -90,6 +90,7 @@ import {
   UpstreamApiApisixAdminUpstreamsPostRequest,
 } from '@/api/apisix/admin/typescript-axios';
 import UpstreamForm from '@/components/apisix/upstream-form.vue';
+import CodeEditor from '@/components/code-editor/index.vue';
 import { t } from '@/locales';
 
 import { FORM_RULES_2 } from './constants';
@@ -125,7 +126,7 @@ const fetchData = async (id: string) => {
 };
 
 const onNextStep = (result: SubmitContext) => {
-  console.debug('ApisixUpstreamEdit onNextStep validation', result); // TODO
+  console.debug('ApisixUpstreamEdit onNextStep validation', result);
   if (result.validateResult !== true) {
     return;
   }
@@ -145,12 +146,12 @@ const onReapply = () => {
   router.replace({ query: null }); // clean query id
 };
 const onSubmit = async (result: SubmitContext) => {
-  console.debug('ApisixUpstreamEdit onSubmit validation', result); // TODO
+  console.debug('ApisixUpstreamEdit onSubmit validation', result);
   if (result.validateResult !== true) {
     return;
   }
 
-  delete (formData.value as any).create_time; // TODO
+  delete (formData.value as any).create_time;
   delete (formData.value as any).update_time;
 
   dataLoading.value = true;
@@ -179,7 +180,6 @@ const create = () => {
   return UpstreamApi.apisixAdminUpstreamsPost(req);
 };
 const update = () => {
-  // TODO
   const req: UpstreamApiApisixAdminUpstreamsIdPutRequest = {
     id: formData.value.id as string,
     apisixAdminRoutesPostRequestUpstream: formData.value,
@@ -189,6 +189,15 @@ const update = () => {
 const onComplete = () => {
   router.back();
 };
+// 配置编辑器
+const previewEditorRef = ref<InstanceType<typeof CodeEditor>>();
+const previewEditorData = ref('');
+watch(activeStep, (newStep, oldStep) => {
+  // <!-- 分步表单2 预览 -->
+  if (newStep === 2) {
+    previewEditorRef.value.loadJson(formData.value, true);
+  }
+});
 </script>
 
 <style lang="less" scoped>

@@ -3,7 +3,6 @@ import { FormRule } from 'tdesign-vue-next';
 import { t } from '@/locales';
 
 export const FORM_RULES: Record<string, FormRule[]> = {
-  name: [{ required: true, type: 'error' }],
   nodes: [{ required: true, type: 'error' }],
   discovery_type: [{ required: true, type: 'error' }],
   service_name: [{ required: true, type: 'error' }],
@@ -11,6 +10,7 @@ export const FORM_RULES: Record<string, FormRule[]> = {
 
 export const UPSTREAM_NODES_RULE: Record<string, FormRule[]> = {
   host: [{ required: true, type: 'error' }],
+  port: [{ required: true, type: 'error' }],
   weight: [{ required: true, type: 'error' }],
 };
 
