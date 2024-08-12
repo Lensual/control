@@ -9,6 +9,7 @@ import apisixSecretEdit from './apisix-secret-edit';
 import apisixService from './apisix-service';
 import apisixSsl from './apisix-ssl';
 import apisixUpstream from './apisix-upstream';
+import apisixUpstreamEdit from './apisix-upstream-edit';
 import dashboardBase from './dashboard-base';
 import dashboardDetail from './dashboard-detail';
 import detailBase from './detail-base';
@@ -45,6 +46,7 @@ export default {
   apisixRoute,
   apisixRouteEdit,
   apisixUpstream,
+  apisixUpstreamEdit,
   apisixService,
   apisixConsumer,
   apisixConsumerEdit,

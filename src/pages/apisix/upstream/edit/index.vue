@@ -21,7 +21,7 @@
         </t-card>
 
         <!-- 分步表单1 基础信息 -->
-        <t-divider align="left">{{ t('pages.apisixRouteEdit.step1.basic') }}</t-divider>
+        <t-divider align="left">{{ t('pages.apisixUpstreamEdit.step1.basic') }}</t-divider>
 
         <upstream-form v-show="activeStep === 1" v-model="formData" class="step-form" @submit="onNextStep">
           <t-form-item>
@@ -86,7 +86,7 @@ import { UpstreamApi } from '@/api/apisix/admin';
 import {
   ApisixAdminRoutesPostRequestUpstream,
   ApisixAdminUpstreamsPost201Response,
-  UpstreamApiApisixAdminUpstreamsIdPatchRequest,
+  UpstreamApiApisixAdminUpstreamsIdPutRequest,
   UpstreamApiApisixAdminUpstreamsPostRequest,
 } from '@/api/apisix/admin/typescript-axios';
 import UpstreamForm from '@/components/apisix/upstream-form.vue';
@@ -125,6 +125,7 @@ const fetchData = async (id: string) => {
 };
 
 const onNextStep = (result: SubmitContext) => {
+  console.debug('ApisixUpstreamEdit onNextStep validation', result); // TODO
   if (result.validateResult !== true) {
     return;
   }
@@ -144,9 +145,13 @@ const onReapply = () => {
   router.replace({ query: null }); // clean query id
 };
 const onSubmit = async (result: SubmitContext) => {
+  console.debug('ApisixUpstreamEdit onSubmit validation', result); // TODO
   if (result.validateResult !== true) {
     return;
   }
+
+  delete (formData.value as any).create_time; // TODO
+  delete (formData.value as any).update_time;
 
   dataLoading.value = true;
   let res: AxiosResponse<ApisixAdminUpstreamsPost201Response>;
@@ -174,11 +179,12 @@ const create = () => {
   return UpstreamApi.apisixAdminUpstreamsPost(req);
 };
 const update = () => {
-  const req: UpstreamApiApisixAdminUpstreamsIdPatchRequest = {
+  // TODO
+  const req: UpstreamApiApisixAdminUpstreamsIdPutRequest = {
     id: formData.value.id as string,
     apisixAdminRoutesPostRequestUpstream: formData.value,
   };
-  return UpstreamApi.apisixAdminUpstreamsIdPatch(req);
+  return UpstreamApi.apisixAdminUpstreamsIdPut(req);
 };
 const onComplete = () => {
   router.back();

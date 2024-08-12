@@ -1,5 +1,5 @@
 <template>
-  <t-form :data="root" :rules="FORM_RULES">
+  <t-form :data="root" :rules="FORM_RULES" @submit="onSubmit">
     <t-form-item :label="t('components.apisixUpstreamForm.name')" name="name">
       <t-input
         v-model="root.name"
@@ -36,31 +36,36 @@
         <t-form
           v-for="(
             nodeItem, index
-          ) in root.nodes as ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodesAnyOfInner[]"
+          ) in normalzedNodes as ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodesAnyOfInner[]"
           :key="index"
+          :ref="(ref) => (nodesForms[index] = ref as unknown as FormInstanceFunctions)"
           style="margin-bottom: var(--td-comp-margin-xxl)"
           layout="inline"
           :data="nodeItem"
           :rules="UPSTREAM_NODES_RULE"
+          class="nodesForm"
         >
-          <t-form-item :label="$t('components.apisixUpstreamForm.nodesInner.host')" name="nodes.host">
+          <t-form-item :label="$t('components.apisixUpstreamForm.nodesInner.host')" name="host">
             <t-input
               v-model="nodeItem.host"
               :placeholder="$t('components.apisixUpstreamForm.nodesInner.hostPlaceholder')"
             />
           </t-form-item>
-          <t-form-item :label="$t('components.apisixUpstreamForm.nodesInner.port')" name="nodes.port">
+          <t-form-item :label="$t('components.apisixUpstreamForm.nodesInner.port')" name="port">
             <t-input-number
               v-model="nodeItem.port"
               theme="normal"
               :placeholder="$t('components.apisixUpstreamForm.nodesInner.portPlaceholder')"
+              min="1"
+              max="65535"
             />
           </t-form-item>
-          <t-form-item :label="$t('components.apisixUpstreamForm.nodesInner.weight')" name="nodes.weight">
+          <t-form-item :label="$t('components.apisixUpstreamForm.nodesInner.weight')" name="weight">
             <t-input-number
               v-model="nodeItem.weight"
               theme="normal"
               :placeholder="$t('components.apisixUpstreamForm.nodesInner.weightPlaceholder')"
+              min="0"
             />
           </t-form-item>
           <t-button theme="danger" style="margin-left: var(--td-comp-margin-xxl)" @click="onRemoveUpstreamNode(index)">
@@ -103,9 +108,11 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref } from 'vue';
+import { FormInstanceFunctions, SubmitContext } from 'tdesign-vue-next';
+import { computed, PropType, ref } from 'vue';
 
 import {
+  ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodes,
   ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodesAnyOfInner,
   ApisixAdminRoutesPostRequestUpstream,
 } from '@/api/apisix/admin/typescript-axios';
@@ -114,21 +121,102 @@ import { t } from '@/locales';
 
 import { DISCOVERY_TYPE, FORM_RULES, UPSTREAM_NODES_RULE, UPSTREAM_TYPE, UPSTREAM_TYPE_OPTIONS } from './constants';
 
+defineOptions({
+  inheritAttrs: false,
+});
+
+const emit = defineEmits<{
+  submit: [result: SubmitContext];
+}>();
+
 const root = defineModel({
   type: Object as PropType<ApisixAdminRoutesPostRequestUpstream>,
   default: {},
   local: false,
 });
 
+const nodesForms = ref<FormInstanceFunctions[]>([]);
+
+const normalzedNodes = computed<ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodesAnyOfInner[]>({
+  get: () => {
+    if (!root.value.nodes) {
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      root.value.nodes = [];
+    }
+
+    // cast to array
+    if (root.value.nodes instanceof Array) {
+      return root.value.nodes;
+    }
+    const newNodes = [];
+    for (const key in root.value.nodes as Record<string, number>) {
+      const [host, port] = key.split(':');
+      // Record<url, weight>
+      const item: ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodesAnyOfInner = {
+        weight: (root.value.nodes as Record<string, number>)[key],
+        port: port ? Number.parseInt(port, 10) : undefined,
+        host,
+      };
+      newNodes.push(item);
+    }
+
+    // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+    root.value.nodes = newNodes;
+
+    return root.value.nodes as ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodesAnyOfInner[];
+  },
+  set: (val: ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodesAnyOfInner[]) => {
+    root.value.nodes = val as ApisixAdminRoutesGet200ResponseListInnerValueUpstreamNodes;
+  },
+});
+
 const upstreamType = ref<UPSTREAM_TYPE>(UPSTREAM_TYPE.NODES);
 
 const onAddUpstreamNode = () => {
-  if (!root.value.nodes) {
-    root.value.nodes = [];
-  }
-  (root.value.nodes as Array<unknown>).push({});
+  normalzedNodes.value.push({
+    weight: 1,
+    port: 80,
+    host: '',
+  });
 };
 const onRemoveUpstreamNode = (i: number) => {
-  (root.value.nodes as Array<unknown>).splice(i, 1);
+  normalzedNodes.value.splice(i, 1);
+};
+
+const onSubmit = async (result: SubmitContext) => {
+  delete (root.value as any).create_time;
+  delete (root.value as any).update_time;
+
+  if (upstreamType.value === UPSTREAM_TYPE.NODES) {
+    delete root.value.discovery_type;
+    delete root.value.service_name;
+    for (const index in nodesForms.value) {
+      // eslint-disable-next-line no-await-in-loop
+      const validateResult = await nodesForms.value[index].validate({ showErrorMessage: true });
+      if (validateResult !== true) {
+        return;
+      }
+    }
+  }
+
+  if (upstreamType.value === UPSTREAM_TYPE.DISCOVERY) {
+    delete root.value.nodes;
+  }
+
+  emit('submit', result);
 };
 </script>
+
+<!-- eslint-disable-next-line vue-scoped-css/enforce-style-type -->
+<style lang="less">
+// 修复在form嵌套时的校验错误样式
+.nodesForm {
+  .t-is-error {
+    .t-input {
+      &__extra {
+        color: var(--td-error-color);
+      }
+    }
+  }
+}
+</style>
