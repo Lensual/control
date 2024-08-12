@@ -104,7 +104,7 @@
     </t-dialog>
 
     <t-drawer v-model:visible="drawerVisible" :header="drawerHeader" :on-confirm="onDrawerClickConfirm" size="medium">
-      <highlightjs language="json" :code="drawerBody" />
+      <code-editor v-model:value="drawerBody" language="json" />
     </t-drawer>
   </div>
 </template>
@@ -128,6 +128,7 @@ import {
   ApisixAdminConsumersGet200ResponseListInner as Item,
   ApisixAdminRoutesIdDelete200Response,
 } from '@/api/apisix/admin/typescript-axios';
+import CodeEditor from '@/components/code-editor/index.vue';
 import { prefix } from '@/config/global';
 import { t } from '@/locales';
 import { useSettingStore } from '@/store';
