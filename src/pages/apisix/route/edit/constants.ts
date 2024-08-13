@@ -1,4 +1,4 @@
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { FormRule } from 'tdesign-vue-next';
 
 export const FORM_RULES_1: Record<string, FormRule[]> = {

@@ -1,4 +1,4 @@
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { FormRule } from 'tdesign-vue-next';
 
 import { t } from '@/locales';

@@ -122,7 +122,8 @@ export default {
 
 <script setup lang="ts">
 import { AxiosError, AxiosResponse } from 'axios';
-import { cloneDeep, merge } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import merge from 'lodash/merge';
 import { MessagePlugin, SubmitContext } from 'tdesign-vue-next';
 import { onActivated, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
