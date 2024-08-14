@@ -47,7 +47,7 @@ const format = () => {
 
 const loadJson = async (obj: any, formatCode?: boolean) => {
   loading.value = true;
-  code.value = JSON.stringify(obj);
+  code.value = JSON.stringify(obj, null, 2); // 如果是readOnly是无法格式化的，所以这里先简单格式化一下
   if (formatCode) {
     await format();
   }
