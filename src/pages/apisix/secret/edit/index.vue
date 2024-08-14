@@ -32,7 +32,7 @@
               :placeholder="t('pages.apisixSecretEdit.step1.secretmanagerPlaceholder')"
               :style="{ width: '480px' }"
               :options="Object.values(SECRETMANAGER)"
-              :disable="editSecretmanager ? true : false"
+              :disabled="editSecretmanager ? true : false"
             />
           </t-form-item>
 
@@ -41,7 +41,7 @@
               v-model="formData.id"
               :style="{ width: '480px' }"
               :placeholder="t('pages.apisixSecretEdit.step1.idPlaceholder')"
-              :disable="editId ? true : false"
+              :disabled="editId ? true : false"
             />
           </t-form-item>
 
@@ -214,6 +214,8 @@ const onReset = () => {
     id: '',
   };
   formData.value = cloneDeep(INITIAL_DATA);
+  editSecretmanager.value = undefined;
+  editId.value = undefined;
 };
 const onReapply = () => {
   onReset();
